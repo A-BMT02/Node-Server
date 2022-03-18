@@ -13,7 +13,20 @@ const getData = () => {
     return JSON.parse(data);  
 }
 
+const updateData = (data) => {
+    const serverData = getData() ; 
+    serverData.push(data) ;
+    fs.writeFileSync('./database.json' , JSON.stringify(serverData)) ; 
+}
+
+const deleteData = (id) => {
+    let products = getData().filter(p => p.id != id) ; 
+    fs.writeFileSync('./database.json' , JSON.stringify(products)) ; 
+}
 
 module.exports = {
-    addData 
+    addData ,
+    getData , 
+    updateData , 
+    deleteData
 }
