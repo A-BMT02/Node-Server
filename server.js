@@ -1,5 +1,5 @@
 const { addData } = require("./utils") ; 
-const { getData } = require("./utils") ;
+const { returnData } = require("./utils") ;
 const { updateData } = require('./utils') ; 
 const { deleteData }  = require('./utils') ; 
 
@@ -14,18 +14,12 @@ const server = http.createServer((req , res) => {
          } )
          req.on('end' , () => {
              const final = JSON.parse(data) ; 
-             addData(final) ;
-             res.end() ;
+             addData(final , res) ;
          })
-
-          
-
-
     }
     else if(req.url === "/students" && req.method === "GET") {
-        res.writeHead(200 , {"Content-type" : "application/json"}) ; 
-        res.write(JSON.stringify(getData())) ;
-        res.end() ; 
+        returnData(req , res) 
+        //res.write(getData()) ;
     }
     else if(req.url === "/students" && req.method == "PUT") {
         let data = "" ; 
@@ -35,14 +29,13 @@ const server = http.createServer((req , res) => {
         }) 
          
         req.on("end" , () => {  
-        updateData(JSON.parse(data)) ; 
-        res.end() ; 
+        updateData(JSON.parse(data) , res) ; 
         })
 
     }
     else if(req.url.match(/\/students\/([0-9]+)/) && req.method === "DELETE") {
         const id = req.url.split('/')[2] ; 
-        deleteData(id) ; 
+        deleteData(id , res) ; 
         
     }
 
