@@ -15,20 +15,7 @@ const addData = async(info , res) => {
 
 }
 
-const getData = () => {
-    return new Promise((res , rej) => {
-        fs.readFile("./database.json" , "utf-8" , (err , data) => {
-        if(err) {
-            rej(err) ;  
-        } 
-        res(data) ;  
-        
-    } )
-    })
-   
-    //const data = fs.readFileSync("./database.json" , {encoding:'utf8' , flag:'r'}) ; 
-     
-}
+
 
 returnData = async (req , res ) => {
    const data = await getData() ;
@@ -43,15 +30,20 @@ returnData = async (req , res ) => {
 }
 
 
-const updateData = async (data , res) => {
-    let serverData = await getData() ; 
-    serverData = JSON.parse(serverData) ; 
-    serverData.push(data) ;
-    fs.writeFile('./database.json' , JSON.stringify(serverData) , () => {
-        res.writeHead(200 , { "Content-type" : "text/plain"}) ; 
-        res.write("succesfully updated") ; 
-        res.end() ; 
-    }) ; 
+const updateData = async (req , res) => {
+    let data = "" ; 
+
+        req.on('data' , chunk => {
+            data+=chunk ; 
+        }) 
+         
+        req.on("end" , async () => {  
+      const final = JSON.parse(data) ; 
+             addData(final , res) ;
+             res.end() ;
+        // updateData(JSON.parse(data) , res) ; 
+        })
+    
 
 }
 
@@ -67,9 +59,40 @@ const deleteData = async (id , res) => {
     }) ; 
 }
 
+const createProduct = (req , res) => {
+
+    let data = "" ; 
+         req.on('data' , chunk => {
+             data+=chunk ; 
+         } )
+         req.on('end' , () => {
+             const final = JSON.parse(data) ; 
+             addData(final , res) ;
+             res.end() ; 
+         })
+
+}
+
+const getData = () => {
+    return new Promise((res , rej) => {
+        fs.readFile("./database.json" , "utf-8" , (err , data) => {
+        if(err) {
+            rej(err) ;  
+        } 
+        res(data) ;  
+        
+    } )
+    })
+   
+     
+}
+
+
+
 module.exports = {
     addData ,
     returnData , 
     updateData , 
-    deleteData
+    deleteData , 
+    createProduct
 }
